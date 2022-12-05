@@ -3,9 +3,10 @@ import CreateTweet from '../components/CreateTweet'
 import TweetListContainer from '../components/TweetListContainer';
 import axios from 'axios';
 import Spinner from 'react-bootstrap/Spinner';
+import localforage from "localforage";
 
 
-function HomePage() {
+function HomePage({userProfile}) {
   const [tweetsList, setTweetsList] = useState([]);
 
   const addNewTweet = (newTweet) => {
@@ -48,7 +49,7 @@ function HomePage() {
 
     return (
     <div >
-        <CreateTweet addNewTweet={addNewTweet} posting={posting}/>
+        <CreateTweet addNewTweet={addNewTweet} posting={posting} userProfile={userProfile} />
         {posting &&     
         <Spinner variant="light" animation="border" role="status">
             <span className="visually-hidden">Loading...</span>

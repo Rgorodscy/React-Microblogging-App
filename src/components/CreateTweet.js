@@ -3,9 +3,9 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 
-function CreateTweet({addNewTweet, posting}) {
+function CreateTweet({addNewTweet, posting, userProfile}) {
     const [tweetInput, setTweetInput] = useState("");
-    const userName = 'Renato';
+    const userName = userProfile;
     
     const onSubmit = (e) => {
         e.preventDefault();
