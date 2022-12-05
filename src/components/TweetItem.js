@@ -19,7 +19,7 @@ function TweetItem({tweetItem}) {
           </CardHeader>
           <Card.Body>
             <div className='d-flex justify-content-start'>
-                <Card.Text >{tweetItem.content}</Card.Text>
+                <Card.Text className='text-start text-break'>{tweetItem.content}</Card.Text>
             </div>
           </Card.Body>
     </Card>

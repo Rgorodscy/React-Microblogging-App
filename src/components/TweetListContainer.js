@@ -2,7 +2,7 @@ import React from 'react'
 import uuid from 'react-uuid'
 import TweetItem from './TweetItem'
 
-function TweetList({tweetsList}) {
+function TweetListContainer({tweetsList}) {
   return (
     <div className='d-flex flex-column align-items-center h-100'>
         {tweetsList.map((tweetItem) => 
@@ -12,4 +12,4 @@ function TweetList({tweetsList}) {
   )
 }
 
-export default TweetList
+export default TweetListContainer

@@ -3,9 +3,9 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 
-function CreateTweet({addNewTweet}) {
+function CreateTweet({addNewTweet, posting}) {
     const [tweetInput, setTweetInput] = useState("");
-    const userName = 'yonatan';
+    const userName = 'Renato';
     
     const onSubmit = (e) => {
         e.preventDefault();
@@ -31,7 +31,7 @@ function CreateTweet({addNewTweet}) {
 
     return (
     <div className='d-flex flex-column border border-secondary border-2 rounded m-1 p-1'>
-        <Form onSubmit={onSubmit}>
+        <Form onSubmit={!posting && onSubmit}>
             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                 <Form.Control 
                 style={textAreaStyle} 

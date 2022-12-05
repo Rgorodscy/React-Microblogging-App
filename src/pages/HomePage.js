@@ -1,34 +1,59 @@
 import React, { useState, useEffect } from 'react'
 import CreateTweet from '../components/CreateTweet'
-import TweetList from '../components/TweetList';
-import localforage from "localforage";
+import TweetListContainer from '../components/TweetListContainer';
+import axios from 'axios';
+import Spinner from 'react-bootstrap/Spinner';
+
 
 function HomePage() {
   const [tweetsList, setTweetsList] = useState([]);
-  const tweetListLocalKey = "tweetListLocalKey"
 
   const addNewTweet = (newTweet) => {
     setTweetsList([newTweet, ...tweetsList]);
+    postTweet(newTweet);
   };
 
-  useEffect(() => {
-    localforage.setItem(tweetListLocalKey, tweetsList);
-  }, [tweetsList]);
-
-  const fetchTweets = async (key, callback) => {
-    const res = await localforage.getItem(key);
-    callback(res);
+  const fetchTweets = async (callback) => {
+    try {
+        const res = await axios.get("https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet");
+        const descListArray = [...res.data.tweets].sort((a, b) => b.date - a.date)
+        callback(descListArray);
+    }
+    catch{((error) => console.log(error))}
   }
 
   useEffect(() => {
-    fetchTweets(tweetListLocalKey, (res) => setTweetsList(res));
+    fetchTweets(res => setTweetsList(res));
   }, []);
 
+  let posting = false
+
+  const postTweet = async (newTweet) => {
+    posting = true
+    try {
+        const postRes = await axios({
+            method: 'post',
+            url: 'https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet',
+            data: {
+                content: newTweet.content, 
+                userName: newTweet.userName, 
+                date: newTweet.date
+            }})
+        hideSpinner(postRes)
+    }
+    catch{((error) => alert(error))}
+  }
+
+  const hideSpinner = () => {posting = false}
 
     return (
     <div >
-        <CreateTweet addNewTweet={addNewTweet} />
-        <TweetList tweetsList={tweetsList} />
+        <CreateTweet addNewTweet={addNewTweet} posting={posting}/>
+        {posting &&     
+        <Spinner variant="light" animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+        </Spinner>}
+        <TweetListContainer tweetsList={tweetsList} />
     </div>
   )
 }
