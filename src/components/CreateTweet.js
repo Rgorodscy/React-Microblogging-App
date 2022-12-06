@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
+import CreateTweetsContext from '../lib/CreateTweetsContext';
 
-function CreateTweet({addNewTweet, posting, userProfile}) {
+function CreateTweet() {
+    const {addNewTweet, postingFetching, userProfile} = useContext(CreateTweetsContext) 
     const [tweetInput, setTweetInput] = useState("");
     const userName = userProfile;
     
@@ -31,7 +33,7 @@ function CreateTweet({addNewTweet, posting, userProfile}) {
 
     return (
     <div className='d-flex flex-column border border-secondary border-2 rounded m-1 p-1'>
-        <Form onSubmit={!posting && onSubmit}>
+        <Form onSubmit={!postingFetching && onSubmit}>
             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                 <Form.Control 
                 style={textAreaStyle} 

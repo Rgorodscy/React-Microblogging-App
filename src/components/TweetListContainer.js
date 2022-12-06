@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import uuid from 'react-uuid'
 import TweetItem from './TweetItem'
+import TweetsContext from '../lib/TweetsContext'
 
-function TweetListContainer({tweetsList}) {
+function TweetListContainer() {
+  const {tweetsList} = useContext(TweetsContext)
+
   return (
     <div className='d-flex flex-column align-items-center h-100'>
         {tweetsList.map((tweetItem) => 
