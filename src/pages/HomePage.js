@@ -3,7 +3,6 @@ import CreateTweet from '../components/CreateTweet'
 import TweetListContainer from '../components/TweetListContainer';
 import axios from 'axios';
 import Spinner from 'react-bootstrap/Spinner';
-import localforage from "localforage";
 import TweetsContext from '../lib/TweetsContext';
 import CreateTweetsContext from '../lib/CreateTweetsContext';
 
@@ -19,13 +18,11 @@ function HomePage({userProfile}) {
 
   const fetchTweets = async (callback) => {
     showSpinner()  
-    try {
       const res = await axios.get("https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet");
         const descListArray = [...res.data.tweets].sort((a, b) => b.date - a.date)
         callback(descListArray);
         hideSpinner(res);
-    }
-    catch{((error) => console.log(error))}
+    
   }
 
   useEffect(() => {
@@ -41,7 +38,7 @@ function HomePage({userProfile}) {
 
   const postTweet = async (newTweet) => {
     showSpinner()
-    try {
+    
         const postRes = await axios({
             method: 'post',
             url: 'https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet',
@@ -51,8 +48,7 @@ function HomePage({userProfile}) {
                 date: newTweet.date
             }})
         hideSpinner(postRes)
-    }
-    catch{((error) => alert(error))}
+    
   }
 
   const showSpinner = () => {setPostingFetching(true)}
