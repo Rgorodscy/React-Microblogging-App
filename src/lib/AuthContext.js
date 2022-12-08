@@ -74,10 +74,9 @@ export function AuthProvider({ children }) {
 
 
 
-    const signUp = async (name, email, password) => {
+    const signUp = async (email, password) => {
         return createUserWithEmailAndPassword(auth, email, password)
         .then((response) => setCurrentUser(response.user))
-        .then(updateFirebaseProfileName(name))
         .catch((error) => handleError(error));
     }
 
