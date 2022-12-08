@@ -4,10 +4,11 @@ import CardHeader from 'react-bootstrap/esm/CardHeader';
 import uuid from 'react-uuid'
 
 function TweetItem({tweetItem}) {
-  
-    return (
+  const date = new Date(tweetItem.date).toLocaleString('en-GB');
+    
+  return (
     <Card
-          bg='dark'
+          bg='secondary'
           key={uuid()}
           text='light'
           style={{ width: '30rem' }}
@@ -15,7 +16,7 @@ function TweetItem({tweetItem}) {
         >
           <CardHeader className='d-flex flex-row justify-content-between'>
             <p>{tweetItem.userName}</p>
-            <p>{tweetItem.date}</p>
+            <p>{date}</p>
           </CardHeader>
           <Card.Body>
             <div className='d-flex justify-content-start'>

@@ -1,28 +1,30 @@
 import React, { useState, useEffect } from 'react'
+import { collection, addDoc, getDocs, orderBy, query  } from "firebase/firestore"; 
+import Spinner from 'react-bootstrap/Spinner';
 import CreateTweet from '../components/CreateTweet'
 import TweetListContainer from '../components/TweetListContainer';
-import axios from 'axios';
-import Spinner from 'react-bootstrap/Spinner';
 import TweetsContext from '../lib/TweetsContext';
 import CreateTweetsContext from '../lib/CreateTweetsContext';
+import { db } from '../firebase'
+import { firestorePost } from '../lib/FirestorePost'
 
-
-function HomePage({userProfile}) {
+function HomePage() {
   const [tweetsList, setTweetsList] = useState([]);
-  const [postingFetching, setPostingFetching] = useState(false)
-
+  const [postingFetching, setPostingFetching] = useState(false);
+  const tweetsRef = collection(db, "tweets");
+  
   const addNewTweet = (newTweet) => {
     setTweetsList([newTweet, ...tweetsList]);
     postTweet(newTweet);
   };
 
   const fetchTweets = async (callback) => {
-    showSpinner()  
-      const res = await axios.get("https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet");
-        const descListArray = [...res.data.tweets].sort((a, b) => b.date - a.date)
-        callback(descListArray);
-        hideSpinner(res);
-    
+    showSpinner();
+    const docsArray = [];
+    const docsResponse = await getDocs(query(tweetsRef, orderBy("date", "desc")));
+    docsResponse.forEach(doc => docsArray.push(doc.data()));
+    callback(docsArray);
+    hideSpinner(docsResponse);
   }
 
   useEffect(() => {
@@ -33,22 +35,21 @@ function HomePage({userProfile}) {
   const fetchTweetsTimer = () => {
     setInterval(() => {
       fetchTweets(res => setTweetsList(res))
-    }, 30000);
+    }, 120000);
   }
 
   const postTweet = async (newTweet) => {
-    showSpinner()
-    
-        const postRes = await axios({
-            method: 'post',
-            url: 'https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet',
-            data: {
-                content: newTweet.content, 
-                userName: newTweet.userName, 
-                date: newTweet.date
-            }})
-        hideSpinner(postRes)
-    
+    showSpinner();
+    await firestorePost(newTweet);
+  }
+  
+  const firestorePost = async (newTweet) => {
+    try {
+      const docRef = await addDoc(collection(db, "tweets"), newTweet);
+      hideSpinner(docRef)
+    } catch (e) {
+      console.error("Error adding to database: ", e);
+    }
   }
 
   const showSpinner = () => {setPostingFetching(true)}
@@ -56,7 +57,7 @@ function HomePage({userProfile}) {
 
     return (
     <div >
-        <CreateTweetsContext.Provider value={{addNewTweet, postingFetching, userProfile}}>
+        <CreateTweetsContext.Provider value={{addNewTweet, postingFetching}}>
           <CreateTweet />
         </CreateTweetsContext.Provider>
         {postingFetching &&     
@@ -68,7 +69,6 @@ function HomePage({userProfile}) {
           <TweetListContainer />
         </TweetsContext.Provider>
         }
-
     </div>
   )
 }

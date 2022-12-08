@@ -1,31 +1,40 @@
-import HomePage from '../pages/HomePage';
+import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomePage from '../pages/HomePage';
 import ProfilePage from '../pages/ProfilePage';
-import React, { useState, useEffect } from 'react'
-import NavBar from '../components/NavBar';
-import localforage from "localforage";
+import SignUp from '../pages/SignUp';
+import Login from '../pages/Login';
+import { AuthProvider } from '../lib/AuthContext';
+import NavBar from './NavBar';
+import PrivateRoute from './PrivateRoute';
+
 
 function MainComponent() {
-    const [userProfile, setUserProfile] = useState("");
-
-  const fetchUser = async (key, callback) => {
-    const res = await localforage.getItem(key);
-    callback(res);
-  }
-
-  useEffect(() => {
-    fetchUser("profileKey", (res) => setUserProfile(res));
-  }, []);
   
     return (
     <>
-        <NavBar />
         <BrowserRouter>
-            <Routes>
-            <Route path="/" element={<HomePage userProfile={userProfile} />} />
-            <Route path="/profile" element={<ProfilePage userProfile={userProfile} />} />
-            </Routes>
+           <AuthProvider>
+              <NavBar />
+              <Routes>
+                <Route path='/signup' element={<SignUp />} />
+                <Route path='/login' element={<Login />} />
+                <Route exact path="/" element={
+                  <PrivateRoute >
+                    <HomePage  />
+                  </PrivateRoute> 
+                    }
+                ></Route>
+                <Route exact path="/profile" element={
+                  <PrivateRoute >
+                    <ProfilePage  />
+                  </PrivateRoute> 
+                    }
+                ></Route>  
+              </Routes>
+
+           </AuthProvider>
         </BrowserRouter>
     </>
   )

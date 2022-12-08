@@ -3,25 +3,30 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import CreateTweetsContext from '../lib/CreateTweetsContext';
+import { useAuth } from '../lib/AuthContext'
+import { inputAreaStyle } from '../lib/resusableStyles'
 
 function CreateTweet() {
-    const {addNewTweet, postingFetching, userProfile} = useContext(CreateTweetsContext) 
+    const {addNewTweet, postingFetching} = useContext(CreateTweetsContext) 
     const [tweetInput, setTweetInput] = useState("");
-    const userName = userProfile;
+    const currentUser = useAuth();
     
     const onSubmit = (e) => {
-        e.preventDefault();
-        const createdDate = `${new Date().toISOString()}`;
-        const tweet = {content: tweetInput, userName: userName, date: createdDate};
-        addNewTweet(tweet);
-        setTweetInput('');
+        if(!postingFetching){
+            e.preventDefault();
+            const createdDate = `${new Date().toISOString()}`;
+            const tweet = {
+                content: tweetInput, 
+                userName: currentUser.currentUser.displayName, 
+                date: createdDate, 
+                userId: currentUser.currentUser.uid};
+            addNewTweet(tweet);
+            setTweetInput('');
+        }
     }
   
     const textAreaStyle = {
-        resize: "none",
-        background: "#15202B",
-        border: "#15202B",
-        color: "#CCC",
+        ...inputAreaStyle,
         width: '30rem'
     }
   
@@ -33,7 +38,7 @@ function CreateTweet() {
 
     return (
     <div className='d-flex flex-column border border-secondary border-2 rounded m-1 p-1'>
-        <Form onSubmit={!postingFetching && onSubmit}>
+        <Form onSubmit={onSubmit}>
             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                 <Form.Control 
                 style={textAreaStyle} 
