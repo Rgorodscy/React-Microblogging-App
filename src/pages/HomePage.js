@@ -7,10 +7,12 @@ import CreateTweetsContext from '../contexts/CreateTweetsContext';
 import { firestorePost } from '../lib/FirestorePost'
 import { fetchUsers } from '../lib/fetchFirestoreUsers';
 import { fetchTweetsWithUsersData } from '../lib/fetchFirestoreTweets';
+import { useAuth } from '../contexts/AuthContext';
 
 function HomePage() {
   const [tweetsList, setTweetsList] = useState([]);
   const [postingFetching, setPostingFetching] = useState(false);
+  const {myTweets, currentUser} = useAuth();
 
   useEffect(() => {
     tweetsFetch()
@@ -19,7 +21,7 @@ function HomePage() {
   const tweetsFetch = async () => {
     showSpinner();
     await fetchUsers();
-    const tweetsArray = await fetchTweetsWithUsersData(res => setTweetsList(res))
+    const tweetsArray = await fetchTweetsWithUsersData(res => setTweetsList(res));
     hideSpinner(tweetsArray);
     fetchTweetsTimer();
   }
@@ -29,7 +31,16 @@ function HomePage() {
       fetchTweetsWithUsersData(res => setTweetsList(res))
     }, 120000);
   }
-    
+   
+  useEffect(() => {
+      if(myTweets) {
+        const tweetsFilteredList = tweetsList.filter(tweet => tweet.userUid === currentUser.uid);
+        setTweetsList(tweetsFilteredList);
+      }
+      else {tweetsFetch()}
+  }, [myTweets])
+  
+
   const addNewTweet = (newTweet) => {
     setTweetsList([newTweet, ...tweetsList]);
     postTweet(newTweet);

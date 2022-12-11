@@ -2,13 +2,15 @@ import React from 'react'
 import Card from 'react-bootstrap/Card';
 import CardHeader from 'react-bootstrap/esm/CardHeader';
 import uuid from 'react-uuid'
+import { useAuth } from '../contexts/AuthContext';
 
 function TweetItem({tweetItem}) {
   const date = new Date(tweetItem.date).toLocaleString('en-GB');
-    
+  const {myTweets} = useAuth();  
+
   return (
     <Card
-          bg='secondary'
+          bg={myTweets ? 'dark' :'secondary'}
           key={uuid()}
           text='light'
           className="my-2 w-100"

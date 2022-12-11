@@ -18,19 +18,19 @@ function ProfilePage() {
         border: "##CCC",
     }
     
-        const fetchCurrentUser = async (callback) => {
-        const userDisplayName = currentUser.displayName ? currentUser.displayName : "";
-        callback(userDisplayName);
-      }
-    
-      useEffect(() => {
+    useEffect(() => {
           initialFetch();
     }, []);
     
     const initialFetch = async () => {
         fetchCurrentUser((res) => setUserNameInput(res));
-        const fetchusersResponse = await fetchUsers();
-        setUsersArray(fetchusersResponse)
+        const fetchUsersResponse = await fetchUsers();
+        setUsersArray(fetchUsersResponse)
+    }
+
+    const fetchCurrentUser = async (callback) => {
+        const userDisplayName = currentUser.displayName ? currentUser.displayName : "";
+        callback(userDisplayName);
     }
 
     const findUserFirestoreDocId = () => {

@@ -3,11 +3,12 @@ import { Image } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import Button from 'react-bootstrap/Button';
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext'
 
 function NavBar() {
-  const { currentUser, logout } = useAuth()
+  const { currentUser, logout, myTweets, setMyTweets } = useAuth()
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -22,7 +23,7 @@ function NavBar() {
   const navLinkStyle = "text-decoration-none text-light m-2"
 
   return (
-    <Navbar bg="secondary" variant="secondary" className='w-75 rounded mb-4'>
+    <Navbar bg={myTweets ? "dark" : "secondary"} variant={myTweets ? "dark" : "secondary"} className='w-75 rounded mb-4'>
       <Container >
         <Nav className='d-flex w-100 justify-content-between'>
           <Nav>
@@ -30,8 +31,9 @@ function NavBar() {
             <Link className={navLinkStyle} to="profile">Profile</Link>
           </Nav>
           <Nav>
-            {currentUser && <Image src={currentUser.photoURL} className="user-image"/>}
-            {currentUser && <div className={navLinkStyle}>{currentUser.displayName ? currentUser.displayName : currentUser.email}</div>}
+            <Button onClick={() => setMyTweets(!myTweets)} variant={myTweets ? "dark" : "light" }>{myTweets ? "All Tweets" : "My Tweets" }</Button>
+            {/* {currentUser && <Image src={currentUser.photoURL} className="user-image"/>}
+            {currentUser && <div className={navLinkStyle}>{currentUser.displayName ? currentUser.displayName : currentUser.email}</div>} */}
           </Nav>
           <Nav>
           {currentUser ? (

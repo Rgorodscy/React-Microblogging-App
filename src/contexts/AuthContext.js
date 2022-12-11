@@ -10,6 +10,7 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import  { auth, db, storage } from '../firebase'
 import { firestorePost } from '../lib/FirestorePost'
 
+
 const AuthContext = React.createContext()
 
 export function useAuth () {
@@ -22,7 +23,8 @@ export function AuthProvider({ children }) {
     const [percent, setPercent] = useState(0);
     const navigate = useNavigate();
     const googleProvider = new GoogleAuthProvider();
- 
+    const [myTweets, setMyTweets] = useState(false)
+
     const handleError = (error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -103,6 +105,10 @@ export function AuthProvider({ children }) {
         return unsubscribe
     }, [])
 
+    const handleTweetFilter = () => {
+
+    }
+
     const value = {
         currentUser,
         signUp,
@@ -110,7 +116,10 @@ export function AuthProvider({ children }) {
         logout,
         googleLogin,
         updateFirebaseProfile: updateFirebaseProfileName,
-        updateFirebaseUserImage
+        updateFirebaseUserImage,
+        myTweets,
+        setMyTweets,
+        handleTweetFilter
     }
   
     return (
