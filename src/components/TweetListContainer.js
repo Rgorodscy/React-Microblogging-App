@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import uuid from 'react-uuid'
 import TweetItem from './TweetItem'
-import TweetsContext from '../lib/TweetsContext'
+import TweetsContext from '../contexts/TweetsContext'
 
 function TweetListContainer() {
   const {tweetsList} = useContext(TweetsContext)

@@ -2,8 +2,8 @@ import React, { useState, useContext } from 'react'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
-import CreateTweetsContext from '../lib/CreateTweetsContext';
-import { useAuth } from '../lib/AuthContext'
+import CreateTweetsContext from '../contexts/CreateTweetsContext';
+import { useAuth } from '../contexts/AuthContext'
 import { inputAreaStyle } from '../lib/resusableStyles'
 
 function CreateTweet() {

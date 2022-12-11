@@ -3,8 +3,8 @@ import { collection, addDoc, getDocs, orderBy, query  } from "firebase/firestore
 import Spinner from 'react-bootstrap/Spinner';
 import CreateTweet from '../components/CreateTweet'
 import TweetListContainer from '../components/TweetListContainer';
-import TweetsContext from '../lib/TweetsContext';
-import CreateTweetsContext from '../lib/CreateTweetsContext';
+import TweetsContext from '../contexts/TweetsContext';
+import CreateTweetsContext from '../contexts/CreateTweetsContext';
 import { db } from '../firebase'
 import { firestorePost } from '../lib/FirestorePost'
 

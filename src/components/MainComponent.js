@@ -5,7 +5,7 @@ import HomePage from '../pages/HomePage';
 import ProfilePage from '../pages/ProfilePage';
 import SignUp from '../pages/SignUp';
 import Login from '../pages/Login';
-import { AuthProvider } from '../lib/AuthContext';
+import { AuthProvider } from '../contexts/AuthContext';
 import NavBar from './NavBar';
 import PrivateRoute from './PrivateRoute';
 
