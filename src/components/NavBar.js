@@ -31,7 +31,7 @@ function NavBar() {
             <Link className={navLinkStyle} to="profile">Profile</Link>
           </Nav>
           <Nav>
-            <Button onClick={() => setMyTweets(!myTweets)} variant={myTweets ? "dark" : "light" }>{myTweets ? "All Tweets" : "My Tweets" }</Button>
+            {currentUser && <Button onClick={() => setMyTweets(!myTweets)} variant={myTweets ? "secondary" : "light" }>{myTweets ? "All Tweets" : "My Tweets" }</Button>}
             {/* {currentUser && <Image src={currentUser.photoURL} className="user-image"/>}
             {currentUser && <div className={navLinkStyle}>{currentUser.displayName ? currentUser.displayName : currentUser.email}</div>} */}
           </Nav>
