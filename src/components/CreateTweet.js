@@ -17,9 +17,11 @@ function CreateTweet() {
             const createdDate = `${new Date().toISOString()}`;
             const tweet = {
                 content: tweetInput, 
-                userName: currentUser.currentUser.displayName, 
+                userDisplayName: currentUser.currentUser.displayName, 
                 date: createdDate, 
-                userId: currentUser.currentUser.uid};
+                userUid: currentUser.currentUser.uid,
+                userEmail: currentUser.currentUser.email
+            };
             addNewTweet(tweet);
             setTweetInput('');
         }

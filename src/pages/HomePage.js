@@ -1,55 +1,44 @@
 import React, { useState, useEffect } from 'react'
-import { collection, addDoc, getDocs, orderBy, query  } from "firebase/firestore"; 
 import Spinner from 'react-bootstrap/Spinner';
 import CreateTweet from '../components/CreateTweet'
 import TweetListContainer from '../components/TweetListContainer';
 import TweetsContext from '../contexts/TweetsContext';
 import CreateTweetsContext from '../contexts/CreateTweetsContext';
-import { db } from '../firebase'
 import { firestorePost } from '../lib/FirestorePost'
+import { fetchUsers } from '../lib/fetchFirestoreUsers';
+import { fetchTweetsWithUsersData } from '../lib/fetchFirestoreTweets';
 
 function HomePage() {
   const [tweetsList, setTweetsList] = useState([]);
   const [postingFetching, setPostingFetching] = useState(false);
-  const tweetsRef = collection(db, "tweets");
-  
+
+  useEffect(() => {
+    tweetsFetch()
+  }, []);
+
+  const tweetsFetch = async () => {
+    showSpinner();
+    await fetchUsers();
+    const tweetsArray = await fetchTweetsWithUsersData(res => setTweetsList(res))
+    hideSpinner(tweetsArray);
+    fetchTweetsTimer();
+  }
+
+  const fetchTweetsTimer = () => {
+    setInterval(() => {
+      fetchTweetsWithUsersData(res => setTweetsList(res))
+    }, 120000);
+  }
+    
   const addNewTweet = (newTweet) => {
     setTweetsList([newTweet, ...tweetsList]);
     postTweet(newTweet);
   };
 
-  const fetchTweets = async (callback) => {
-    showSpinner();
-    const docsArray = [];
-    const docsResponse = await getDocs(query(tweetsRef, orderBy("date", "desc")));
-    docsResponse.forEach(doc => docsArray.push(doc.data()));
-    callback(docsArray);
-    hideSpinner(docsResponse);
-  }
-
-  useEffect(() => {
-    fetchTweets(res => setTweetsList(res));
-    fetchTweetsTimer();
-  }, []);
-
-  const fetchTweetsTimer = () => {
-    setInterval(() => {
-      fetchTweets(res => setTweetsList(res))
-    }, 120000);
-  }
-
   const postTweet = async (newTweet) => {
     showSpinner();
-    await firestorePost(newTweet);
-  }
-  
-  const firestorePost = async (newTweet) => {
-    try {
-      const docRef = await addDoc(collection(db, "tweets"), newTweet);
-      hideSpinner(docRef)
-    } catch (e) {
-      console.error("Error adding to database: ", e);
-    }
+    await firestorePost("tweets", newTweet);
+    hideSpinner()
   }
 
   const showSpinner = () => {setPostingFetching(true)}

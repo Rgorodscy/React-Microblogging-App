@@ -4,34 +4,47 @@ import Button from 'react-bootstrap/Button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'
 import { inputAreaStyle } from '../lib/resusableStyles'
-
+import { firestoreUpdate } from '../lib/FirestoreUpdate';
+import { fetchUsers } from '../lib/fetchFirestoreUsers';
 
 function ProfilePage() {
     const [userNameInput, setUserNameInput] = useState("");
     const [userImage, setUserImage] = useState("");
     const {currentUser, updateFirebaseProfile, updateFirebaseUserImage} = useAuth();
+    const [usersArray, setUsersArray] = useState([]);
     const navigate = useNavigate()
     const inputStyle = {
         ...inputAreaStyle,
         border: "##CCC",
     }
     
-    
-    //Change this to something simplier
-    const fetchUser = async (callback) => {
+        const fetchCurrentUser = async (callback) => {
         const userDisplayName = currentUser.displayName ? currentUser.displayName : "";
         callback(userDisplayName);
       }
     
       useEffect(() => {
-        fetchUser((res) => setUserNameInput(res));
-      }, []);
+          initialFetch();
+    }, []);
+    
+    const initialFetch = async () => {
+        fetchCurrentUser((res) => setUserNameInput(res));
+        const fetchusersResponse = await fetchUsers();
+        setUsersArray(fetchusersResponse)
+    }
 
+    const findUserFirestoreDocId = () => {
+        const firestoreUserToupdate = usersArray.find((user) => user.userData.uid === currentUser.uid);
+        const firestoreDocumentToupdate = firestoreUserToupdate.userDocumentId;
+        return firestoreDocumentToupdate
+    }
 
     const onSubmit = async (e) => {
         e.preventDefault();
+        const userFirestoreDocId = await findUserFirestoreDocId();
         await updateFirebaseProfile(userNameInput);
         {userImage && await updateFirebaseUserImage(userImage)};
+        firestoreUpdate("users", userFirestoreDocId, {displayName: userNameInput})
         setUserNameInput("");
         setUserImage("");
         navigate("/")

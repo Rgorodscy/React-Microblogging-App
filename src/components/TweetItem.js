@@ -11,11 +11,10 @@ function TweetItem({tweetItem}) {
           bg='secondary'
           key={uuid()}
           text='light'
-          style={{ width: '30rem' }}
-          className="my-2"
+          className="my-2 w-100"
         >
           <CardHeader className='d-flex flex-row justify-content-between'>
-            <p>{tweetItem.userName}</p>
+            <p>{tweetItem.userDisplayName ? tweetItem.userDisplayName : tweetItem.userEmail}</p>
             <p>{date}</p>
           </CardHeader>
           <Card.Body>

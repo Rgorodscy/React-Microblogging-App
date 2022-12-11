@@ -8,6 +8,7 @@ import { createUserWithEmailAndPassword,
 import { useNavigate } from 'react-router-dom';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import  { auth, db, storage } from '../firebase'
+import { firestorePost } from '../lib/FirestorePost'
 
 const AuthContext = React.createContext()
 
@@ -21,7 +22,7 @@ export function AuthProvider({ children }) {
     const [percent, setPercent] = useState(0);
     const navigate = useNavigate();
     const googleProvider = new GoogleAuthProvider();
-
+ 
     const handleError = (error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -34,6 +35,8 @@ export function AuthProvider({ children }) {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const token = credential.accessToken;
         setCurrentUser(result.user);
+        const { displayName, email, photoURL, uid } = result.user;
+        firestorePost("users", {displayName, email, photoURL, uid});
         navigate("/");
       }).catch((error) => {
         handleError(error);
@@ -72,11 +75,13 @@ export function AuthProvider({ children }) {
             .catch((error) => handleError(error));
     }
 
-
-
     const signUp = async (email, password) => {
         return createUserWithEmailAndPassword(auth, email, password)
-        .then((response) => setCurrentUser(response.user))
+        .then((response) => {
+            setCurrentUser(response.user);
+            const { displayName, email, photoURL, uid } = response.user;
+            firestorePost("users", {displayName, email, photoURL, uid});
+            })
         .catch((error) => handleError(error));
     }
 
