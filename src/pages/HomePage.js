@@ -8,11 +8,13 @@ import { firestorePost } from '../lib/FirestorePost'
 import { fetchUsers } from '../lib/fetchFirestoreUsers';
 import { fetchTweetsWithUsersData } from '../lib/fetchFirestoreTweets';
 import { useAuth } from '../contexts/AuthContext';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase';
 
 function HomePage() {
   const [tweetsList, setTweetsList] = useState([]);
   const [postingFetching, setPostingFetching] = useState(false);
-  const {myTweets, currentUser} = useAuth();
+  const {myTweets, currentUser, searchType, searchInput} = useAuth();
 
   useEffect(() => {
     tweetsFetch()
@@ -23,15 +25,43 @@ function HomePage() {
     await fetchUsers();
     const tweetsArray = await fetchTweetsWithUsersData(res => setTweetsList(res));
     hideSpinner(tweetsArray);
-    fetchTweetsTimer();
-  }
-
-  const fetchTweetsTimer = () => {
-    setInterval(() => {
-      fetchTweetsWithUsersData(res => setTweetsList(res))
-    }, 120000);
+    listenForChanges();
   }
    
+  const listenForChanges = () => {
+    onSnapshot(collection(db, "tweets"), () => {
+      fetchTweetsWithUsersData(res => setTweetsList(res))
+    })
+  }
+
+  useEffect(() => {
+    if(searchInput) {
+      switch (searchType){
+        case "tweets":
+          const tweetsSearchList = [];
+          for(let object of tweetsList) {
+            if(object.content.indexOf(searchInput)!=-1){
+              tweetsSearchList.push(object)
+            }
+          };
+          setTweetsList(tweetsSearchList);  
+          break       
+        case "users":
+          const usersSearchList = [];
+          for(let object of tweetsList) {
+            if(object.userDisplayName.indexOf(searchInput)!=-1){
+              usersSearchList.push(object)
+            }
+          };
+          setTweetsList(usersSearchList); 
+          break
+        default:
+          tweetsFetch();
+          break
+      }
+    }
+  }, [searchType])
+
   useEffect(() => {
       if(myTweets) {
         const tweetsFilteredList = tweetsList.filter(tweet => tweet.userUid === currentUser.uid);

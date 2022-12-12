@@ -10,7 +10,7 @@ import { fetchUsers } from '../lib/fetchFirestoreUsers';
 function ProfilePage() {
     const [userNameInput, setUserNameInput] = useState("");
     const [userImage, setUserImage] = useState("");
-    const {currentUser, updateFirebaseProfile, updateFirebaseUserImage} = useAuth();
+    const {currentUser, updateFirebaseProfileName, updateFirebaseUserImage} = useAuth();
     const [usersArray, setUsersArray] = useState([]);
     const navigate = useNavigate()
     const inputStyle = {
@@ -42,7 +42,7 @@ function ProfilePage() {
     const onSubmit = async (e) => {
         e.preventDefault();
         const userFirestoreDocId = await findUserFirestoreDocId();
-        await updateFirebaseProfile(userNameInput);
+        await updateFirebaseProfileName(userNameInput);
         {userImage && await updateFirebaseUserImage(userImage)};
         firestoreUpdate("users", userFirestoreDocId, {displayName: userNameInput})
         setUserNameInput("");

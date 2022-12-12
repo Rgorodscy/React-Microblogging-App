@@ -29,7 +29,7 @@ function CreateTweet() {
   
     const textAreaStyle = {
         ...inputAreaStyle,
-        width: '30rem'
+        width: '50vw'
     }
   
     const placeholderStyle = {
