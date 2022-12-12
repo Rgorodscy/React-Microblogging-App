@@ -23,7 +23,9 @@ export function AuthProvider({ children }) {
     const [percent, setPercent] = useState(0);
     const navigate = useNavigate();
     const googleProvider = new GoogleAuthProvider();
-    const [myTweets, setMyTweets] = useState(false)
+    const [myTweets, setMyTweets] = useState(false);
+    const [searchInput, setSearchInput] = useState("");
+    const [searchType, setSearchType] = useState("");
 
     const handleError = (error) => {
         const errorCode = error.code;
@@ -115,11 +117,15 @@ export function AuthProvider({ children }) {
         login,
         logout,
         googleLogin,
-        updateFirebaseProfile: updateFirebaseProfileName,
+        updateFirebaseProfileName,
         updateFirebaseUserImage,
         myTweets,
         setMyTweets,
-        handleTweetFilter
+        handleTweetFilter,
+        searchInput,
+        setSearchInput,
+        searchType,
+        setSearchType
     }
   
     return (

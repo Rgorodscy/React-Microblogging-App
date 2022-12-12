@@ -8,7 +8,8 @@ export const fetchUsers = async () => {
     const usersResponse = await getDocs(usersRef);
     usersResponse.forEach(user => {usersArray.push({
       userData: user.data(),
-      userDocumentId: user._document.key.path.segments[6]});
+      userDocumentId: user.id
+    });
     });
     return usersArray
   }
