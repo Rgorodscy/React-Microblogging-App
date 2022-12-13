@@ -9,7 +9,7 @@ function TweetListContainer() {
   return (
     <div className='d-flex flex-column align-items-center h-100'>
         {tweetsList.map((tweetItem) => 
-            <TweetItem key={uuid()} tweetItem={tweetItem} />
+            <TweetItem key={tweetItem.tweetDocumentId} tweetItem={tweetItem.tweetData} />
         )}
     </div>
   )  
