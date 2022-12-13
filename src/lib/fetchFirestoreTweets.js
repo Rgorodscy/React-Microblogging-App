@@ -25,8 +25,8 @@ export const fetchTweetsWithUsersData = async (callback) => {
         const userFound = usersArray.find((user) => user.userData.uid === tweet.tweetData.userUid);
         tweet.tweetData.userDisplayName = userFound.userData.displayName;
         tweet.tweetData.userPhotoURL = userFound.userData.photoURL;
-        tweet.tweetData.userEmail = userFound.userData.email
+        tweet.tweetData.userEmail = userFound.userData.email;
+        tweet.userDocumentId = userFound.userDocumentId
     }})
-    console.log(tweetsArray)
     callback(tweetsArray);
 }

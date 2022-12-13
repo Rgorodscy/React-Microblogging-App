@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import uuid from 'react-uuid'
 import TweetItem from './TweetItem'
 import TweetsContext from '../contexts/TweetsContext'
 
@@ -9,7 +8,7 @@ function TweetListContainer() {
   return (
     <div className='d-flex flex-column align-items-center h-100'>
         {tweetsList.map((tweetItem) => 
-            <TweetItem key={tweetItem.tweetDocumentId} tweetItem={tweetItem.tweetData} />
+            <TweetItem key={tweetItem.tweetDocumentId} tweetItem={tweetItem} />
         )}
     </div>
   )  

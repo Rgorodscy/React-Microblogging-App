@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import SignUpLoginForm from '../components/SignUpLoginForm';
 
 function SignUp() {
-  const { signUp, googleLogin } = useAuth();
+  const { signUp, googleSignUp } = useAuth();
   const [error, setError] = useState("")
   const [loading, setLoading] = useState("")
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ function SignUp() {
   }
   
   async function handleGoogleLogin(e) {
-    googleLogin();
+    googleSignUp();
   }
 
     return (
