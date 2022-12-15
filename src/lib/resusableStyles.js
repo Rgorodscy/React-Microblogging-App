@@ -8,3 +8,4 @@ export const inputAreaStyle = {
   color: "#CCC",
 }
 
+export const linkStyle = "text-decoration-none text-light"

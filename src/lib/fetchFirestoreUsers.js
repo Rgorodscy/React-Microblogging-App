@@ -7,7 +7,7 @@ export const fetchUsers = async () => {
     const usersArray = [];
     const usersResponse = await getDocs(usersRef);
     usersResponse.forEach(user => {usersArray.push({
-      userData: user.data(),
+      ...user.data(),
       userDocumentId: user.id,
     });
     });

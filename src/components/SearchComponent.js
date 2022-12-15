@@ -10,9 +10,25 @@ function SearchComponent() {
   const {myTweets, searchInput, setSearchInput, setSearchType} = useAuth();
   const [searchMade, setSearchMade] = useState(false);
 
+
+  const tweetSearch = () => {
+    setSearchType("tweets");
+    setSearchMade(true);
+  }
+
+  const userSearch = () => {
+    setSearchType("users");
+    setSearchMade(true);
+  }
+
+  const clearSearch = () => {
+    setSearchType("");
+    setSearchMade(false);
+  }
+
     return (
     <InputGroup>
-        <Button disabled={!searchMade} onClick={() => {setSearchType(""); setSearchMade(false)}} variant={myTweets ? "outline-light" : "outline-dark"}>Show All</Button>
+        <Button disabled={!searchMade} onClick={clearSearch} variant={myTweets ? "outline-light" : "outline-dark"}>Show All</Button>
         <Form.Control 
         value={searchInput}
         placeholder="Search..."
@@ -25,8 +41,8 @@ function SearchComponent() {
           align="end"
           disabled={!searchInput || searchMade}
         >
-          <Dropdown.Item onClick={() => {setSearchType("tweets"); setSearchMade(true)}}>Tweets</Dropdown.Item>
-          <Dropdown.Item onClick={() => {setSearchType("users"); setSearchMade(true)}}>Users</Dropdown.Item>
+          <Dropdown.Item onClick={tweetSearch}>Tweets</Dropdown.Item>
+          <Dropdown.Item onClick={userSearch}>Users</Dropdown.Item>
         </DropdownButton>
     </InputGroup>
   )

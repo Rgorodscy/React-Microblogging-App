@@ -28,7 +28,13 @@ function MainComponent() {
                 ></Route>
                 <Route exact path="/profile" element={
                   <PrivateRoute >
-                    <ProfilePage  />
+                    <ProfilePage myProfile={true} />
+                  </PrivateRoute> 
+                    }
+                ></Route>
+                <Route path="/profile:id" element={
+                  <PrivateRoute >
+                    <ProfilePage myProfile={false} />
                   </PrivateRoute> 
                     }
                 ></Route>  

@@ -9,8 +9,9 @@ import { useNavigate } from 'react-router-dom';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import  { auth, db, storage } from '../firebase'
 import { firestorePost } from '../lib/FirestorePost'
-import { setDoc, doc, getDocs, collection } from 'firebase/firestore';
+import { getDocs, collection } from 'firebase/firestore';
 import { fetchUsers } from '../lib/fetchFirestoreUsers';
+import { firestoreUpdate } from '../lib/FirestoreUpdate';
 
 const AuthContext = React.createContext()
 
@@ -29,6 +30,7 @@ export function AuthProvider({ children }) {
     const [searchType, setSearchType] = useState("");
     const [userDocRef, setUserDocRef] = useState("");
     const [likedTweetsArray, setLikedTweetsArray] = useState([]);
+    const [usersList, setUsersList] = useState([]);
 
     const handleError = (error) => {
         const errorCode = error.code;
@@ -39,30 +41,24 @@ export function AuthProvider({ children }) {
     const googleSignUp = async () => {
         signInWithPopup(auth, googleProvider)
             .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
         setCurrentUser(result.user);
         const { displayName, email, photoURL, uid } = result.user;
         firestorePost("users", {displayName, email, photoURL, uid});
         navigate("/");
       }).catch((error) => {
         handleError(error);
-        const email = error.customData.email;
-        const credential = GoogleAuthProvider.credentialFromError(error);
+        GoogleAuthProvider.credentialFromError(error);
       });
     }
 
     const googleLogin = async () => {
         signInWithPopup(auth, googleProvider)
-            .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
+        .then((result) => {
         setCurrentUser(result.user);
         navigate("/");
       }).catch((error) => {
         handleError(error);
-        const email = error.customData.email;
-        const credential = GoogleAuthProvider.credentialFromError(error);
+        GoogleAuthProvider.credentialFromError(error);
       });
     }
 
@@ -74,27 +70,23 @@ export function AuthProvider({ children }) {
             const percent = Math.round(
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
             setPercent(percent);
-        },
+            },
             (err) => console.log(err),
             () => {
             getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                updateFirebaseProfilePhoto(url)
+                updateFirebaseProfile("photoURL", url);
             });
-        }
+            }
         );   
     }
 
-    const updateFirebaseProfileName = async (name) => {
-        return updateProfile(auth.currentUser, {displayName: name})
-            .then(() => {console.log(`Name updated`)})
+    const updateFirebaseProfile = (key, value) => {
+        return updateProfile(auth.currentUser, {[key]: value})
+            .then(firestoreUpdate("users", userDocRef, {[key]: value}))
             .catch((error) => handleError(error));
     }
-    
-    const updateFirebaseProfilePhoto = async (url) => {
-        return updateProfile(auth.currentUser, {photoURL: url})
-            .then(() => {console.log(`Picture updated`)})
-            .catch((error) => handleError(error));
-    }
+
+
 
     const signUp = async (email, password) => {
         return createUserWithEmailAndPassword(auth, email, password)
@@ -116,35 +108,34 @@ export function AuthProvider({ children }) {
     }
 
     useEffect(() => {
+        getUserLikedTweets();
         const unsubscribe = auth.onAuthStateChanged(user => {
             setCurrentUser(user);
             setLoading(false);
         });
         
         return unsubscribe
-    }, [])
-
-
-    useEffect(() => {
-            getUserLikedTweets();
     }, [currentUser])
-    
+
     const searchUserDocRef = async () => {
         const fetchedUsersArray = await fetchUsers();
-        const userFound =  fetchedUsersArray.find(user => user.userData.uid === currentUser.uid)
+        setUsersList(fetchedUsersArray);
+        const userFound =  fetchedUsersArray.find(user => user.uid === currentUser.uid)
         const userDocRef =  userFound.userDocumentId;
         setUserDocRef(userDocRef)
         return userDocRef
     }
     
     const getUserLikedTweets = async () => {
-        const userRef = await searchUserDocRef();
-        const likedTweetsArray = []
-        const likedTweetsRef = collection(db, "users", userRef, "likedTweets");
-        const likedTweetsResponse = await getDocs(likedTweetsRef);
-        likedTweetsResponse.forEach(likedTweet => {likedTweetsArray.push(likedTweet.data());
-        });
-        setLikedTweetsArray(likedTweetsArray)
+        if(currentUser){
+            const userRef = await searchUserDocRef();
+            const likedTweetsArray = []
+            const likedTweetsRef = collection(db, "users", userRef, "likedTweets");
+            const likedTweetsResponse = await getDocs(likedTweetsRef);
+            likedTweetsResponse.forEach(likedTweet => {likedTweetsArray.push(likedTweet.data());
+            });
+            setLikedTweetsArray(likedTweetsArray);
+        }
     }
 
     const value = {
@@ -154,8 +145,8 @@ export function AuthProvider({ children }) {
         logout,
         googleSignUp,
         googleLogin,
-        updateFirebaseProfileName,
         updateFirebaseUserImage,
+        updateFirebaseProfile,
         myTweets,
         setMyTweets,
         searchInput,
@@ -163,7 +154,8 @@ export function AuthProvider({ children }) {
         searchType,
         setSearchType,
         userDocRef,
-        likedTweetsArray
+        likedTweetsArray,
+        usersList
     }
   
     return (

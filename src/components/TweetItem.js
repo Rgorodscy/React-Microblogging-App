@@ -5,15 +5,13 @@ import { useAuth } from '../contexts/AuthContext';
 import { BsLightningFill, BsLightning } from "react-icons/bs";
 import { Link } from 'react-router-dom';
 import { db } from '../firebase';
-import { setDoc, doc, collection, deleteDoc } from 'firebase/firestore';
-
+import { setDoc, doc, deleteDoc } from 'firebase/firestore';
+import { linkStyle } from '../lib/resusableStyles';
 
 function TweetItem({tweetItem}) {
-  const date = new Date(tweetItem.tweetData.date).toLocaleString('en-GB');
+  const date = new Date(tweetItem.date).toLocaleString('en-GB');
   const {myTweets, userDocRef, likedTweetsArray} = useAuth();  
   const [liked, setLiked] = useState(false)
-
-
 
   const handleLikeClick = async (e) => {
     e.preventDefault()
@@ -39,6 +37,8 @@ function TweetItem({tweetItem}) {
     handleLikedTweet()
   }, [])
 
+  const profilePageLink = `/profile:${tweetItem.userDocumentId}`
+
   return (
     <Card
           bg={myTweets ? 'dark' :'secondary'}
@@ -47,12 +47,14 @@ function TweetItem({tweetItem}) {
           className="my-2 w-100"
         >
           <CardHeader className='d-flex flex-row justify-content-between'>
-            <p>{tweetItem.tweetData.userDisplayName ? tweetItem.tweetData.userDisplayName : tweetItem.tweetData.userEmail}</p>
+            <Link to={profilePageLink} className={linkStyle}>
+              <p>{tweetItem.userDisplayName ? tweetItem.userDisplayName : tweetItem.userEmail}</p>
+            </Link>
             <p>{date}</p>
           </CardHeader>
           <Card.Body>
             <div className='d-flex justify-content-between align-items-center'>
-                <Card.Text className='text-start text-break'>{tweetItem.tweetData.content}</Card.Text>
+                <Card.Text className='text-start text-break'>{tweetItem.content}</Card.Text>
                <Link onClick={handleLikeClick} className='text-light h4'>
                 {liked? 
                <BsLightningFill /> :

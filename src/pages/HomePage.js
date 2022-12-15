@@ -16,10 +16,6 @@ function HomePage() {
   const [postingFetching, setPostingFetching] = useState(false);
   const {myTweets, currentUser, searchType, searchInput} = useAuth();
 
-  useEffect(() => {
-    tweetsFetch()
-  }, []);
-
   const tweetsFetch = async () => {
     showSpinner();
     await fetchUsers();
@@ -40,7 +36,7 @@ function HomePage() {
         case "tweets":
           const tweetsSearchList = [];
           for(let object of tweetsList) {
-            if(object.content.indexOf(searchInput)!=-1){
+            if(object.content.indexOf(searchInput)!==-1){
               tweetsSearchList.push(object)
             }
           };
@@ -49,7 +45,7 @@ function HomePage() {
         case "users":
           const usersSearchList = [];
           for(let object of tweetsList) {
-            if(object.userDisplayName.indexOf(searchInput)!=-1){
+            if(object.userDisplayName.indexOf(searchInput)!==-1){
               usersSearchList.push(object)
             }
           };
@@ -60,16 +56,13 @@ function HomePage() {
           break
       }
     }
-  }, [searchType])
-
-  useEffect(() => {
-      if(myTweets) {
-        const tweetsFilteredList = tweetsList.filter(tweet => tweet.userUid === currentUser.uid);
-        setTweetsList(tweetsFilteredList);
-      }
-      else {tweetsFetch()}
-  }, [myTweets])
-  
+    else if(myTweets) {
+      const tweetsFilteredList = tweetsList.filter(tweet => tweet.userUid === currentUser.uid);
+      setTweetsList(tweetsFilteredList);
+    }
+    else {tweetsFetch()}
+  }, [searchType, myTweets])
+ 
 
   const addNewTweet = (newTweet) => {
     setTweetsList([newTweet, ...tweetsList]);
