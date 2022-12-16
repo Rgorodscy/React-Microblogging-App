@@ -3,7 +3,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'
-import { inputAreaStyle } from '../lib/resusableStyles'
+import { inputAreaStyle, profilePicturePlaceholder } from '../lib/resusableStyles'
 import { firestoreUpdate } from '../lib/FirestoreUpdate';
 import { fetchUsers } from '../lib/fetchFirestoreUsers';
 import Image from 'react-bootstrap/Image'
@@ -11,7 +11,10 @@ import Image from 'react-bootstrap/Image'
 function ProfilePage({myProfile}) {
     const [userNameInput, setUserNameInput] = useState("");
     const [userImageFile, setUserImageFile] = useState("");
-    const {currentUser, updateFirebaseUserImage, userDocRef, updateFirebaseProfile, usersList} = useAuth();
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    
+    const {currentUser, updateFirebaseUserImage, userDocRef, updateFirebaseProfile, usersList, updateAuthPassword} = useAuth();
     const navigate = useNavigate();
     const inputStyle = {
         ...inputAreaStyle,
@@ -39,10 +42,18 @@ function ProfilePage({myProfile}) {
 
     const onSubmit = async (e) => {
         e.preventDefault();
+        if(password){
+            if(password !== confirmPassword) {
+                alert("Passwords don't match")
+            }
+            else{updateAuthPassword(password)}
+        }
         await updateFirebaseProfile("displayName", userNameInput);
         {userImageFile && updateFirebaseUserImage(userImageFile)};
         setUserNameInput("");
         setUserImageFile("");
+        setPassword("");
+        setConfirmPassword("")
         navigate("/")
     }
 
@@ -52,7 +63,10 @@ function ProfilePage({myProfile}) {
         setuserProfile(userFound)
     }
     
-    const profilePicturePlaceholder = "https://media.istockphoto.com/id/1214428300/vector/default-profile-picture-avatar-photo-placeholder-vector-illustration.jpg?s=612x612&w=0&k=20&c=vftMdLhldDx9houN4V-g3C9k0xl6YeBcoB_Rk6Trce0="
+    const onError = (e) => {
+        ((e.target.src = profilePicturePlaceholder)
+        )
+      }
 
     return (
     <div className='d-flex justify-content-start w-50 mt-2'>
@@ -62,7 +76,7 @@ function ProfilePage({myProfile}) {
                 src={myProfile ? 
                     currentUser.photoURL ? currentUser.photoURL : profilePicturePlaceholder
                     : userProfile.photoURL ? currentUser.photoURL : profilePicturePlaceholder
-                } />
+                } onError={onError} />
             <h2 className='display-6'>{myProfile ? currentUser.displayName : userProfile.displayName}</h2>  
             {myProfile && 
             <Form className='w-100' onSubmit={onSubmit}>
@@ -71,6 +85,11 @@ function ProfilePage({myProfile}) {
                     <Form.Control size="lg" type="text" placeholder="User Name" className='w-100' style={inputStyle} onChange={(e) => setUserNameInput(e.target.value)} value={userNameInput} />
                     <Form.Label>User Photo</Form.Label>
                     <Form.Control type="file" style={inputStyle} onChange={(e) => setUserImageFile(e.target.files[0])} />
+                </Form.Group>
+                <Form.Group className="mt-4 mb-3 w-100 d-flex flex-column align-items-start" >
+                    <Form.Label>Change Password</Form.Label>
+                    <Form.Control type="password" placeholder="Password (min 6 characters)" className='w-100' style={inputStyle} onChange={(e) => setPassword(e.target.value)}></Form.Control>
+                    <Form.Control type="password" placeholder="Confirm Password" className='w-100 mt-2' style={inputStyle} onChange={(e) => setConfirmPassword(e.target.value)}></Form.Control>
                 </Form.Group>
                 <div className='d-flex justify-content-end align-items-end w-100'>
                     <Button variant="primary" type="submit">Save</Button>

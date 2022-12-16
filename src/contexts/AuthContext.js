@@ -4,7 +4,8 @@ import { createUserWithEmailAndPassword,
     signOut, 
     GoogleAuthProvider, 
     signInWithPopup, 
-    updateProfile } from "firebase/auth";
+    updateProfile,
+    updatePassword } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import  { auth, db, storage } from '../firebase'
@@ -138,6 +139,11 @@ export function AuthProvider({ children }) {
         }
     }
 
+    const updateAuthPassword = (newPassword) => {
+        updatePassword(auth.currentUser, newPassword)
+        .catch((error) => handleError(error));
+    }
+
     const value = {
         currentUser,
         signUp,
@@ -155,7 +161,8 @@ export function AuthProvider({ children }) {
         setSearchType,
         userDocRef,
         likedTweetsArray,
-        usersList
+        usersList,
+        updateAuthPassword
     }
   
     return (

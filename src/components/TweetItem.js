@@ -6,7 +6,8 @@ import { BsLightningFill, BsLightning } from "react-icons/bs";
 import { Link } from 'react-router-dom';
 import { db } from '../firebase';
 import { setDoc, doc, deleteDoc } from 'firebase/firestore';
-import { linkStyle } from '../lib/resusableStyles';
+import { linkStyle, profilePicturePlaceholder } from '../lib/resusableStyles';
+import Image from 'react-bootstrap/Image'
 
 function TweetItem({tweetItem}) {
   const date = new Date(tweetItem.date).toLocaleString('en-GB');
@@ -39,6 +40,11 @@ function TweetItem({tweetItem}) {
 
   const profilePageLink = `/profile:${tweetItem.userDocumentId}`
 
+  const onError = (e) => {
+    ((e.target.src = profilePicturePlaceholder)
+    )
+  }
+
   return (
     <Card
           bg={myTweets ? 'dark' :'secondary'}
@@ -47,9 +53,12 @@ function TweetItem({tweetItem}) {
           className="my-2 w-100"
         >
           <CardHeader className='d-flex flex-row justify-content-between'>
-            <Link to={profilePageLink} className={linkStyle}>
-              <p>{tweetItem.userDisplayName ? tweetItem.userDisplayName : tweetItem.userEmail}</p>
-            </Link>
+            <div className='d-flex align-items-baseline'>
+              <Image height="20px" width="20px" src={tweetItem.userPhotoURL ? tweetItem.userPhotoURL : profilePicturePlaceholder} onError={onError} className="me-2"  rounded={true} />
+              <Link to={profilePageLink} className={linkStyle}>
+                <p>{tweetItem.userDisplayName ? tweetItem.userDisplayName : tweetItem.userEmail}</p>
+              </Link>
+            </div>
             <p>{date}</p>
           </CardHeader>
           <Card.Body>
